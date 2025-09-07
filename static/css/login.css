@@ -1,0 +1,100 @@
+/* Styles extracted from login.html */
+.login-body { /* Apply to body tag on login page specifically if needed */
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f7fc; /* Light background */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    margin: 50px auto; /* Centers the box */
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+    flex-grow: 1; /* Allows container to grow if page is short */
+}
+
+.login-container h2 {
+    color: #692AA9; /* Theme color */
+    margin-bottom: 25px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.login-container .form-label {
+     display: none; /* Hiding labels */
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.login-btn {
+    background: #9E3FFD;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 25px; /* Pill shape */
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-btn:hover {
+    background: #692AA9; /* Darker hover */
+}
+
+.login-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.login-btn .spinner-border { /* Style spinner within button */
+    width: 1rem;
+    height: 1rem;
+    margin-right: 8px;
+}
+
+.login-container p {
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.login-container a {
+    color: #9E3FFD; /* Theme link color */
+    text-decoration: none;
+    font-weight: 500;
+}
+.login-container a:hover {
+    text-decoration: underline;
+}
+
+/* Error message styling using Bootstrap classes */
+/* #loginError {
+     width: 100%;
+     margin-top: 15px;
+} */

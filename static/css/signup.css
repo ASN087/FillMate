@@ -1,0 +1,75 @@
+/* Styles extracted from signup.html */
+
+.signup-body { /* Apply to body tag on signup page specifically */
+    /* Inherit from theme.css or add specific background if needed */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.signup-container {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   width: 100%;
+   max-width: 400px;
+   margin: 50px auto;
+   background: rgba(255, 255, 255, 0.9);
+   padding: 40px 30px; /* Reduced padding slightly */
+   border-radius: 10px;
+   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+   flex-grow: 1;
+}
+
+.signup-container h2 {
+   color: #692AA9;
+   margin-bottom: 25px; /* Increased spacing */
+   text-align: center;
+   font-weight: 600;
+}
+
+.signup-container input {
+   width: 100%;
+   padding: 12px 15px; /* Matched login */
+   margin-bottom: 15px;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   font-size: 16px;
+   box-sizing: border-box;
+}
+
+.signup-btn {
+   background: #9E3FFD;
+   color: white;
+   padding: 12px;
+   border: none;
+   border-radius: 25px;
+   font-size: 16px;
+   cursor: pointer;
+   transition: background 0.3s;
+   width: 100%;
+   margin-top: 10px; /* Added spacing */
+}
+
+.signup-btn:hover {
+   background: #692AA9;
+}
+
+.signup-container p {
+   margin-top: 20px; /* Increased spacing */
+   font-size: 14px;
+   text-align: center;
+}
+
+.signup-container a {
+   color: #9E3FFD;
+   text-decoration: none;
+   font-weight: 500; /* Matched login */
+}
+.signup-container a:hover {
+    text-decoration: underline;
+}
+
+/* Use Bootstrap alert classes for messages */
+/* .alert { ... } */

@@ -1,0 +1,139 @@
+/* General Resets & Body */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    font-weight: lighter; /* Consider changing to normal or 400 if too light */
+}
+
+html, body {
+    height: 100%; /* Ensure body takes full height */
+}
+
+body {
+    /* background: url('../images/welcome_edited.jpg') no-repeat center center/cover; /* Landing page specific? Keep separate? */
+    background-color: #F8F0FF; /* Default soft lavender background for app pages */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Basic Button Styles (from style.css) */
+.s-btn {
+    background: #9E3FFD; /* Accent color */
+    color: #ffffff; /* Dark text for contrast */
+    padding: 12px 40px;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    width: max-content;
+    text-decoration: none; /* Ensure links styled as buttons aren't underlined */
+    display: inline-block; /* Ensure proper sizing */
+    text-align: center;
+    vertical-align: middle;
+}
+
+.s-btn:hover {
+    background: #692AA9; /* Darker purple */
+    color: #ffffff;
+}
+
+.cta-button {
+    margin-top: 20px;
+    background: #9E3FFD;
+    color: white;
+    padding: 12px 24px;
+    font-size: 18px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.cta-button:hover {
+    background: #492370;
+    color: white;
+}
+
+/* Specific Landing Page Styles (from style.css) */
+/* Consider moving these to a landing_page.css if theme.css gets too big */
+.hero-section {
+    margin-top: 100px;
+    margin-left: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    max-width: 800px;
+    /* animation: fadeSlideIn 1.25s ease-out 0.85s; Apply animation - Needs @keyframes */
+}
+
+.hero-section h1 {
+    font-size: 80px; /* Very large, adjust if needed */
+    font-weight: bold;
+    color: #1a1a1a;
+}
+
+.hero-section p {
+    font-size: 30px;
+    font-weight: 100;
+    margin-top: 10px;
+}
+
+/* General utilities */
+.table-purple {
+    background-color: #9E3FFD;
+}
+
+.btn-purple {
+    background-color: #9E3FFD;
+    color: white;
+    border: none;
+    /* padding: 8px 20px; Defined sizes may vary, use Bootstrap btn classes */
+    border-radius: 6px;
+    transition: background-color 0.3s;
+}
+
+.btn-purple:hover {
+    background-color: #692AA9;
+    color: white;
+}
+
+.form-control:focus {
+    border-color: #9E3FFD;
+    box-shadow: 0 0 0 0.2rem rgba(158, 63, 253, 0.25);
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: text-bottom;
+    border: 0.2em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
+}
+
+/* Card base style */
+.card {
+    border-radius: 12px; /* Consistent corner rounding */
+    /* overflow: hidden; /* Be careful, can hide shadows/tooltips */
+    border: 1px solid #eee; /* Softer border */
+}
+
+/* Layout for main content area used by dashboards */
+.main-content {
+    padding-top: 1.5rem; /* Add some space below navbar */
+    padding-bottom: 1.5rem;
+}

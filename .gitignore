@@ -1,0 +1,13 @@
+# Virtual environment
+venv/
+Pipfile.lock
+
+#Django migrations and cache
+*.pyc
+__pycache__/
+db.sqlite3
+
+#IDE and System files
+.vscode/
+.idea/
+.DS_Store

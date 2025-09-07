@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | FillMate{% endblock %}
+
+{# Link specific CSS for this page #}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/templates_cards.css' %}">
+    {# modals.css already linked in base.html #}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid dashboard-content-actual"> {# Renamed class to avoid conflict #}
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0" style="color: #692AA9;">Available Templates</h1>
+        {# REMOVED Search Bar #}
+    </div>
+
+    <!-- Template Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="templateContainer"> {# Adjusted cols #}
+        {# --- Loading Skeletons --- #}
+        {% for i in "123" %} {# Example: Show 3 placeholders #}
+        <div class="col placeholder-col">
+            <div class="card h-100 border-0 shadow-sm placeholder-glow template-card"> {# Added template-card class #}
+                <div class="template-thumbnail placeholder"></div> {# Use thumbnail class #}
+                <div class="card-body template-info"> {# Use info class #}
+                    <h5 class="card-title placeholder-wave">
+                        <span class="placeholder col-8 rounded"></span>
+                    </h5>
+                    <p class="card-text placeholder-wave">
+                        <span class="placeholder col-5 rounded"></span>
+                         <span class="placeholder col-4 rounded"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+         {# --- End Loading Skeletons --- #}
+        {# Actual template cards will be loaded by templates.js #}
+    </div>
+
+    {# --- Modals --- #}
+    <!-- Template Fill Form Modal -->
+    <div class="modal fade" id="templateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable"> {# Added scrollable #}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="templateModalLabel">Fill Document</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {# Added placeholder for error messages #}
+                     <div id="submissionErrorArea" class="alert alert-danger d-none" role="alert"></div>
+                     <form id="documentForm" class="px-1 py-2"> {# Reduced padding #}
+                        {# CSRF token should be handled by JS if submitting via fetch #}
+                        {# Placeholders will be added by templates.js #}
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-between"> {# Space between groups #}
+                    <!-- Format Selector -->
+                    <div>
+                        <span class="me-2 small text-muted">Output Format:</span>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <input type="radio" class="btn-check" name="format" id="formatDocx" value="docx" checked>
+                            <label class="btn btn-outline-primary" for="formatDocx">DOCX</label>
+
+                            <input type="radio" class="btn-check" name="format" id="formatPdf" value="pdf">
+                            <label class="btn btn-outline-primary" for="formatPdf">PDF</label>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                        {# Download button functionality needs to be added to templates.js #}
+                        <button type="button" class="btn btn-purple btn-sm" id="downloadDocumentBtn">
+                            <i class="bi bi-download me-1"></i> Download
+                        </button>
+                         <button type="button"
+                            class="btn btn-success btn-sm"
+                            id="submitForApprovalBtn"
+                            onclick="handleFormSubmission()"> {# Assumes function is global #}
+                            <i class="bi bi-send-check me-1"></i> Submit for Approval
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Options Modal -->
+    <div class="modal fade" id="optionsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Template Options</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4 text-center" id="optionsModalBody"> {# Added text-center #}
+                    <!-- Options will be inserted here by JavaScript -->
+                     <p>Loading options...</p> {# Placeholder text #}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Template Preview</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0"> {# Removed inline height #}
+                    <iframe id="previewIframe" style="width: 100%; height: 80vh; border: none;"></iframe> {# Kept inline height for iframe #}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {# --- End Modals --- #}
+
+</div> {# End container-fluid #}
+
+<!-- REMOVED <style> blocks -->
+{% endblock %}
+
+{% block extra_js %}
+ {# Link the templates.js file which handles fetching/displaying templates and modals #}
+ <script src="{% static 'js/templates.js' %}"></script>
+{% endblock %}

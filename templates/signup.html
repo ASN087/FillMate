@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FillMate - Signup</title>
+
+    {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> {# Added Bootstrap for alerts #}
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}"> {# Specific signup styles #}
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+</head>
+
+<!-- REMOVED <style> block -->
+<body class="signup-body"> {# Optional: Add class #}
+
+    {# Include standard navbar #}
+    {% include 'navbar.html' %}
+
+    <div class="signup-container">
+        <h2>Signup to FillMate</h2>
+
+        {% if messages %}
+            <div class="w-100 mb-3"> {# Wrap messages for layout #}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <form id="signupForm" method="post" action="{% url 'users:signup' %}"> {# Use correct URL name #}
+            {% csrf_token %}
+            <div class="mb-3">
+                <input type="text" id="fullname" name="username" class="form-control" placeholder="Username" required> {# Changed placeholder, use BS class #}
+            </div>
+             <div class="mb-3">
+                <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
+            </div>
+             <div class="mb-3">
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+             <div class="mb-3">
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm Password" required>
+            </div>
+
+            <button class="signup-btn" type="submit">Sign Up</button>
+        </form>
+
+        <p>Already have an account? <a href="{% url 'users:login_page' %}">Login here</a></p> {# Use correct URL name #}
+    </div>
+
+    <footer style="text-align: center; padding: 20px; background-color: #eee; margin-top: auto;">
+        © {% now "Y" %} FillMate. All rights reserved.
+    </footer>
+
+    <script>
+        // Add client-side validation for password confirmation
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            if (password !== confirmPassword) {
+                event.preventDefault(); // Stop form submission
+                // Improve feedback - maybe add message near fields instead of alert
+                 alert('Passwords do not match!');
+                 // Optionally clear confirm password field
+                 document.getElementById('confirm_password').value = '';
+                 document.getElementById('confirm_password').focus();
+            }
+             // Add other client-side checks if needed (e.g., password complexity)
+        });
+    </script>
+
+    {# Bootstrap JS Bundle needed for alert dismissal #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {# Link script.js if it contains relevant code #}
+    {# <script src="{% static 'js/script.js' %}"></script> #}
+</body>
+</html>

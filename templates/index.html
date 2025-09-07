@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FillMate - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/logo1.jpg' %}" alt="FillMate Logo">
+            </a>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'users:about' %}">About Us</a></li>
+            
+            
+            
+            <a href="{% url 'users:login_page' %}">
+                <button class="s-btn">Login</button>
+            </a>
+        </ul>
+    </nav>
+
+    <section class="hero-section">
+        <h1>Effective Document Generation and Management</h1>
+        <p>Generate, Submit, and Track Documents with Ease</p>
+        <a href="{% url 'users:signup' %}">
+            <button class="cta-button">Get Started</button>
+        </a>
+    </section>
+</body>
+</html>
+
+

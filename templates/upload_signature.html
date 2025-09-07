@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4>Upload Your Digital Signature</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label">Signature Image</label>
+                    {{ form.digital_signature }}
+                    <div class="form-text">
+                        Upload a clear PNG image with transparent background (300x100px recommended)
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload me-2"></i> Upload Signature
+                    </button>
+                </div>
+            </form>
+            
+            {% if request.user.userprofile.digital_signature %}
+            <div class="mt-4 border-top pt-3">
+                <h5>Current Signature:</h5>
+                <img src="{{ request.user.userprofile.digital_signature.url }}" 
+                     alt="Your signature"
+                     style="max-width: 300px; height: auto; background: #f8f9fa; padding: 1rem;"
+                     class="img-thumbnail mt-2">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

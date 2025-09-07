@@ -1,0 +1,134 @@
+{% extends "base.html" %} <!-- Or your main base template -->
+{% load static %}
+
+{% block title %}{{ page_title|default:"My Documents" }} | FillMate{% endblock %}
+
+{% block content %}
+<div class="container mt-4"> <!-- Add basic container/styling -->
+    <h1 style="color: #692AA9; margin-bottom: 30px;">{{ page_title|default:"My Submitted Documents" }}</h1>
+
+    {# Display Django messages (like success after submission) #}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-sm border-0"> {# Use a card for consistency #}
+        <div class="card-body">
+            {% if submissions %} {# Check if the 'submissions' context variable exists #}
+            <div class="table-responsive"> <!-- Make table scroll on small screens -->
+                <table class="table table-hover align-middle"> <!-- Bootstrap table styling -->
+                    <thead class="table-primary text-white"> {# Header styling (you can use table-purple if defined elsewhere) #}
+                        <tr>
+                            <th scope="col">Submission ID</th>
+                            <th scope="col">Template Name</th>
+                            <th scope="col">Submitted On</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Actions / Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# Loop through the 'submissions' passed from the view #}
+                        {% for submission in submissions %}
+                        <tr>
+                            <td>#{{ submission.id }}</td>
+                            <td>{{ submission.template.name }}</td>
+                            <td>{{ submission.submitted_at|date:"M d, Y, P" }}</td> <!-- Format date/time -->
+                            <td>
+                                {# Display status badge based on submission.status #}
+                                <span class="badge rounded-pill
+                                    {% if submission.status == 'Approved' %}bg-success
+                                    {% elif submission.status == 'Rejected' %}bg-danger
+                                    {% else %}bg-warning text-dark{% endif %}">
+                                    {{ submission.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {# Conditional actions based on status #}
+                                {% if submission.status == 'Approved' %}
+                                    {# Check if the approved_version exists and has a file #}
+                                    {% with approved_doc=submission.approved_version %} {# Use direct related name #}
+                                        {% if approved_doc and approved_doc.signed_file %}
+                                            <a href="{{ approved_doc.signed_file.url }}" class="btn btn-success btn-sm" download>
+                                                <i class="bi bi-download"></i> Download Signed PDF
+                                            </a>
+                                        {% else %}
+                                            {# Optional: Handle case where approval happened but file isn't ready/found #}
+                                            <span class="text-muted fst-italic">Approved (File pending/missing)</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% elif submission.status == 'Rejected' %}
+                                    {# Display rejection reason if it exists #}
+                                    {% if submission.rejection_reason %}
+                                    <span class="text-danger" title="{{ submission.rejection_reason }}"> {# Add title attribute for full reason on hover #}
+                                        <i class="bi bi-info-circle"></i> Reason: {{ submission.rejection_reason|truncatechars:50 }} {# Show truncated reason #}
+                                    </span>
+                                    {% else %}
+                                     <span class="text-danger"><i class="bi bi-x-circle"></i> Rejected</span>
+                                    {% endif %}
+                                {% else %}
+                                    {# Status is Pending #}
+                                    <span class="text-muted">Pending Review</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            {# Message shown if the user has no submissions #}
+            <p class="text-muted text-center mt-3">
+                You have not submitted any documents for review yet.
+                Go to the <a href="{% url 'users:user_dashboard' %}">Dashboard</a> to select a template and submit.
+                {# Adjust the URL name 'users:user_dashboard' if your template selection page is different #}
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Optional: Styles (keep your styles or adapt) -->
+<style>
+    .table-primary { /* Example: Bootstrap primary color for header */
+        background-color: #692AA9; /* Match your theme */
+        border-color: #692AA9;
+    }
+    .badge { /* Ensure badges have some padding */
+        padding: 0.4em 0.7em;
+    }
+    /* Add your .btn-purple styles if needed for other elements */
+    .btn-purple {
+        background-color: #9E3FFD;
+        color: white;
+        border: none;
+        transition: 0.3s ease-in-out;
+    }
+    .btn-purple:hover {
+        background-color: #692AA9;
+        color: white; /* Ensure text remains white on hover */
+    }
+    .card {
+        border-radius: 12px;
+    }
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Add any specific JS for this page if needed -->
+<script>
+    // Example: Initialize tooltips if using Bootstrap 5 for rejection reasons
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      // Check if it doesn't already have a tooltip instance
+      if (!bootstrap.Tooltip.getInstance(tooltipTriggerEl)) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+      }
+    })
+</script>
+{% endblock %}

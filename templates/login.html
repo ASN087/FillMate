@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FillMate - Login</title>
+
+    {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> {# Keep BS for alerts/spinner #}
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}"> {# Base theme #}
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}"> {# Navbar styles #}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}"> {# Specific login styles #}
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+    <!-- REMOVED <style> block -->
+</head>
+<body class="login-body"> {# Optional: Add class if login.css uses it #}
+
+    {# Include standard navbar #}
+    {% include 'navbar.html' %} 
+
+    <!-- Login Form Container -->
+    <div class="login-container">
+        <h2>Login to FillMate</h2>
+
+        <div id="loginError" class="alert alert-danger w-100 d-none" role="alert"></div>
+
+        <form id="loginForm" method="POST"> {# method="POST" added #}
+            {% csrf_token %}
+            <div class="mb-3"> {# Added margin for spacing #}
+                <input type="text" id="username" name="username" class="form-control" placeholder="Username" required aria-label="Username"> {# Use BS class #}
+            </div>
+            <div class="mb-3">
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required aria-label="Password">
+            </div>
+
+            <button class="login-btn" type="submit" id="submitBtn">
+                <span>Login</span>
+            </button>
+
+            <p><a href="#">Forgot Password?</a></p>
+            <p>Don't have an account? <a href="{% url 'users:signup' %}">Sign up</a></p>
+        </form>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; background-color: #eee; margin-top: auto;">
+        © {% now "Y" %} FillMate. All rights reserved.
+    </footer>
+
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        const submitButton = document.getElementById('submitBtn');
+        const errorContainer = document.getElementById('loginError');
+
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+            clearError(); // Clear previous errors
+            setLoading(true); // Disable button and show spinner
+
+            const username = loginForm.username.value;
+            const password = loginForm.password.value;
+            const csrfToken = getCookie('csrftoken');
+
+            try {
+                // Use the correct API endpoint URL name from users/urls.py
+                const response = await fetch("{% url 'api_users:api_login' %}", { // Correct URL
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken // Include CSRF token
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    // Use error message from backend if available, otherwise generic
+                    throw new Error(data.error || `Login failed with status: ${response.status}`);
+                }
+
+                // --- Login Successful ---
+
+                // Store tokens in localStorage for API calls from other JS (like templates.js)
+                if (data.access_token) {
+                    localStorage.setItem('access_token', data.access_token);
+                }
+                if (data.refresh_token) {
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                }
+                 // Store user info if needed by frontend immediately
+                if (data.user) {
+                    localStorage.setItem('user_info', JSON.stringify(data.user));
+                }
+
+                // *** CRITICAL FIX: Use the redirect URL from the backend response ***
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url; // Redirect to dashboard (user or HOD) or admin
+                } else {
+                    // Fallback if redirect_url is somehow missing (shouldn't happen)
+                    console.warn("Redirect URL missing from response, falling back to /dashboard/");
+                    window.location.href = '/dashboard/';
+                }
+
+            } catch (error) {
+                console.error("Login Error:", error);
+                showError(error.message || 'An unexpected error occurred. Please try again.');
+                setLoading(false); // Re-enable button on error
+            }
+            // No finally block needed for setLoading(false) because successful login navigates away
+        });
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                submitButton.disabled = true;
+                // Use innerHTML to include the spinner span
+                submitButton.innerHTML = `
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span>Logging in...</span>`;
+            } else {
+                submitButton.disabled = false;
+                 // Restore original button text
+                submitButton.innerHTML = '<span>Login</span>';
+            }
+        }
+
+        function showError(message) {
+            errorContainer.textContent = message;
+            errorContainer.classList.remove('d-none'); // Show the error container
+        }
+
+        function clearError() {
+            errorContainer.textContent = '';
+            errorContainer.classList.add('d-none'); // Hide the error container
+        }
+
+    </script>
+
+    {# Bootstrap JS Bundle needed for alerts #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

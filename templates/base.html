@@ -1,0 +1,276 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FillMate{% endblock %}</title>
+    
+    {# Bootstrap CSS #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    {# Link NEW CSS Files #}
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    {# Link other CSS only if needed globally, otherwise link in specific templates #}
+    <link rel="stylesheet" href="{% static 'css/modals.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}"> 
+    
+    {# Favicon #}
+    <link rel="icon" href="{% static 'images/favicon.png' %}">
+
+    {# Block for page-specific CSS #}
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {# Include the cleaned navbar #}
+    {% include 'navbar.html' %}
+
+    <div class="container-fluid">
+        <div class="row" id="main-layout-row">
+            {# --- CORRECTED (4th Attempt): Sidebar and Conditional Main Column Class --- #}
+
+            {# 1. Render Sidebar ONLY if user is authenticated #}
+            {% if user.is_authenticated %}
+                <div class="col-md-3 col-lg-2 d-none d-md-block sidebar">
+                    <div class="sidebar-sticky pt-3">
+                        <ul class="nav flex-column">
+                            {# HOD Links #}
+                            {% if is_hod_user %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'hod_dashboard' %}active{% endif %}" href="{% url 'users:hod_dashboard' %}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                {# ✅ Updated Link ✅ #}
+                                <a class="nav-link {% if request.resolver_match.url_name == 'hod_submission_list' and request.resolver_match.kwargs.status == 'pending' %}active{% endif %}"
+                                   href="{% url 'users:hod_submission_list' status='pending' %}">
+                                    <i class="bi bi-hourglass-split"></i> Pending
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                {# ✅ Updated Link ✅ #}
+                               <a class="nav-link {% if request.resolver_match.url_name == 'hod_submission_list' and request.resolver_match.kwargs.status == 'approved' %}active{% endif %}"
+                                  href="{% url 'users:hod_submission_list' status='approved' %}">
+                                   <i class="bi bi-check-circle"></i> Approved
+                               </a>
+                           </li>
+                           <li class="nav-item">
+                            {# ✅ Updated Link ✅ #}
+                           <a class="nav-link {% if request.resolver_match.url_name == 'hod_submission_list' and request.resolver_match.kwargs.status == 'rejected' %}active{% endif %}"
+                              href="{% url 'users:hod_submission_list' status='rejected' %}">
+                               <i class="bi bi-x-circle"></i> Rejected
+                           </a>
+                       </li>
+                                
+                                
+                                <li class="nav-item"> <a class="nav-link {% if request.resolver_match.url_name == 'upload_signature' %}active{% endif %}" href="{% url 'users:upload_signature' %}"><i class="bi bi-pen-fill"></i> Signature</a> </li>
+                            {# Regular User Links #}
+                            {% else %}
+                                <li class="nav-item"> <a class="nav-link {% if request.resolver_match.url_name == 'user_dashboard' %}active{% endif %}" href="{% url 'users:user_dashboard' %}"><i class="bi bi-grid"></i> Templates</a> </li>
+                                <li class="nav-item"> <a class="nav-link {% if request.resolver_match.view_name == 'documents:my_documents' %}active{% endif %}" href="{% url 'documents:my_documents' %}"><i class="bi bi-file-earmark-check"></i> My Documents</a> </li>
+                            {% endif %}
+                            {# Common Link #}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.app_name == 'notifications' %}active{% endif %}" href="{% url 'notifications:all-notifications' %}">
+                                    <i class="bi bi-bell"></i> Notifications
+                                    {% if unread_count > 0 %} <span class="badge bg-danger rounded-pill ms-auto">{{ unread_count }}</span> {% endif %}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            {% endif %} {# End of sidebar rendering #}
+
+            {# 2. Determine the correct Bootstrap column class for the main content area #}
+            {% if user.is_authenticated %}
+                {% comment %}If logged in (and sidebar is shown on md+), use the remaining columns {% endcomment %}
+                {% firstof "col-md-9 ms-sm-auto col-lg-10 px-md-4" as main_column_class %}
+            {% else %}
+                {% comment %}If not logged in, use full width{% endcomment %}
+                {% firstof "col-12" as main_column_class %}
+            {% endif %}
+
+            {# 3. Render the main content area ONCE using the determined class #}
+            <main class="{{ main_column_class }} main-content">
+                 {# ✅ THE SINGLE, ONLY DEFINITION of block content ✅ #}
+                 {% block content %}{% endblock content %}
+            </main>
+            {# --- END STRUCTURE --- #}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/templates.js' %}"></script>
+    
+    <script>
+        async function handleFormSubmission() {
+             const submitBtn = document.getElementById('submitForApprovalBtn');
+             if (!submitBtn) return; // Exit if button not found
+
+             submitBtn.disabled = true;
+             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+
+             try {
+                 const tokens = await getActiveTokens(); // Assumes getActiveTokens handles refresh
+                 const form = document.getElementById('documentForm');
+                 if (!form) throw new Error("Form not found");
+
+                 const csrfToken = getCSRFToken();
+                 if (!csrfToken) throw new Error("CSRF token missing - please refresh the page");
+
+                 const formData = new FormData(form);
+                 const format = document.querySelector('input[name="format"]:checked')?.value || 'docx';
+                 formData.append('format', format);
+
+                 // Ensure window.currentTemplate is set by the logic that opens the modal
+                 if (!window.currentTemplate || !window.currentTemplate.id) {
+                     throw new Error("Template information is missing.");
+                 }
+
+                 const response = await fetch(
+                     `/api/documents/templates/${window.currentTemplate.id}/submit/`, // Ensure this URL is correct
+                     {
+                         method: 'POST',
+                         headers: {
+                             'X-CSRFToken': csrfToken,
+                             'Authorization': `Bearer ${tokens.access}`
+                             // 'Content-Type' is NOT set for FormData, browser sets it with boundary
+                         },
+                         body: formData
+                     }
+                 );
+
+                 const result = await response.json(); // Try parsing JSON regardless of status
+
+                 if (!response.ok) {
+                      // Use error from backend if available, else construct one
+                     throw new Error(result.error || `Server responded with status ${response.status}`);
+                 }
+
+                 // Success
+                 if (result.redirect_url) {
+                     window.location.href = result.redirect_url; // Use backend redirect URL
+                 } else {
+                     console.warn("Submission successful but redirect URL missing, redirecting to My Documents.");
+                     window.location.href = "{% url 'documents:my_documents' %}"; // Fallback URL
+                 }
+
+             } catch (error) {
+                 console.error("Submission error:", error);
+                 // Display error to user (using alert or a dedicated message area)
+                 const errorMsgArea = document.getElementById('submissionErrorArea'); // Assuming an area exists
+                 if (errorMsgArea) {
+                     errorMsgArea.textContent = `Submission failed: ${error.message}`;
+                     errorMsgArea.style.display = 'block';
+                 } else {
+                     alert(`Submission failed: ${error.message}`);
+                 }
+                  // Reset button state only on error
+                 submitBtn.disabled = false;
+                 submitBtn.innerHTML = '<i class="bi bi-send-check me-2"></i> Submit for Approval';
+             }
+             // REMOVED finally block - button state reset only on error, success navigates away
+         }
+    </script>
+    <script>
+    // Check for admin path with regular user session
+    if (window.location.pathname.includes('admin') && localStorage.getItem('access_token')) {
+        fetch('/logout/', {method: 'POST'})
+        .then(() => window.location.href = '/login/');
+    }
+
+
+    // Helper functions to add in base.html
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    async function attemptTokenRefresh(refreshToken) {
+        try {
+            const response = await fetch('/api/token/refresh/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ refresh: refreshToken })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('access_token', data.access);
+                document.cookie = `access_token=${data.access}; Path=/; Secure; SameSite=Lax`;
+                return data.access;
+            }
+        } catch (e) {
+            console.warn("Token refresh failed:", e);
+        }
+        return null;
+    }
+
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+            document.cookie.match(/csrftoken=([^;]+)/)?.[1];
+    }
+
+    async function getActiveTokens() {
+        // Check for valid access token
+        let access = localStorage.getItem('access_token') || getCookie('access_token');
+        
+        // If no valid token, try refresh
+        if (!access || isTokenExpired(access)) {
+            const refresh = localStorage.getItem('refresh_token') || getCookie('refresh_token');
+            if (refresh) {
+                const newTokens = await refreshTokens(refresh);
+                if (newTokens) return newTokens;
+            }
+            throw new Error("Session expired");
+        }
+        
+        return { access };
+    }
+
+    async function refreshTokens(refreshToken) {
+        try {
+            const response = await fetch('/api/token/refresh/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refresh: refreshToken })
+            });
+            
+            if (response.ok) {
+                const { access, refresh } = await response.json();
+                localStorage.setItem('access_token', access);
+                if (refresh) localStorage.setItem('refresh_token', refresh);
+                return { access };
+            }
+        } catch (e) {
+            console.error("Token refresh failed:", e);
+        }
+        return null;
+    }
+
+    function isTokenExpired(token) {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.exp < Date.now() / 1000;
+        } catch {
+            return true;
+        }
+    }
+
+    </script>
+
+    {# Block for page-specific JS #}
+    {% block extra_js %}{% endblock %}
+
+
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <!-- Your existing sidebar -->
+    </aside>
+
+    <section class="dashboard-content">
+        <h2>Document Templates</h2>
+        
+        <!-- Template Categories -->
+        <div class="template-categories">
+            <button class="category-btn active">All Templates</button>
+            <button class="category-btn">Legal</button>
+            <button class="category-btn">Business</button>
+        </div>
+
+        <!-- Template Grid -->
+        <div class="template-grid">
+            {% for template in templates %}
+            <div class="template-card" data-id="{{ template.id }}">
+                <div class="template-thumbnail">
+                    <i class="bi bi-file-earmark-word"></i>
+                </div>
+                <div class="template-info">
+                    <h3>{{ template.name }}</h3>
+                    <p>{{ template.placeholders.count }} fields</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<!-- Form Modal (hidden by default) -->
+<div class="modal fade" id="documentFormModal">
+    <!-- Dynamic form will be inserted here -->
+</div>
+{% endblock %}

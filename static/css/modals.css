@@ -1,0 +1,156 @@
+/* General Modal Styles */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    border: none; /* Remove default border */
+}
+
+.modal-header {
+    background: #9E3FFD;
+    color: white;
+    border-bottom: none; /* Remove default border */
+    padding: 1rem 1.5rem; /* Adjust padding */
+}
+/* Specific rounding if needed, Bootstrap usually handles this */
+/* .modal-header { border-radius: 10px 10px 0 0; } */
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1); /* Make default close button white */
+}
+
+/* Specific Modals */
+
+/* Template Fill Form Modal (#templateModal in userdash.html) */
+#templateModal .modal-header {
+    background-color: #9E3FFD; /* Ensure consistency */
+}
+#templateModal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+#templateModal #documentForm {
+     margin-top: 20px;  /* Use padding in modal-body */
+}
+#templateModal .form-group { /* Styles from templates.css (assuming JS creates these) */
+    margin-bottom: 15px;
+}
+#templateModal .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #692AA9;
+    font-weight: 500;
+}
+#templateModal .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Template Options Modal (#optionsModal in userdash.html) */
+#optionsModal .modal-header {
+    background: linear-gradient(135deg, #9E3FFD, #692AA9); /* Gradient header */
+}
+#optionsModal .modal-body {
+     padding: 2rem; /* More padding */
+}
+#optionsModal .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+#optionsModal .btn-primary { /* Assuming these are used for options */
+    background-color: transparent;
+    color: #9E3FFD;
+    border: 2px solid #9E3FFD;
+}
+#optionsModal .btn-primary:hover {
+    background-color: #9E3FFD;
+    color: white;
+    transform: translateY(-2px);
+}
+#optionsModal .btn-outline-primary { /* Assuming these are used */
+    color: #9E3FFD;
+    border: 2px solid #9E3FFD;
+    background-color: transparent;
+}
+#optionsModal .btn-outline-primary:hover {
+    background-color: #9E3FFD;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Template Preview Modal (#previewModal in userdash.html) */
+#previewModal .modal-header {
+    background-color: #9E3FFD;
+}
+#previewModal .modal-body {
+    padding: 0;
+    height: 80vh; /* Set height */
+}
+#previewModal #previewIframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Document Review Modal (#reviewModal in hoddash.html) */
+#reviewModal {
+     z-index: 1060; /* Needs to be higher than navbar (1030) */
+}
+/*#reviewModal .modal-dialog.modal-fullscreen {*/
+    /* max-width: none; */ /* Handled by Bootstrap */
+    /* margin: 0; */ /* Handled by Bootstrap */
+    /* height: 100vh; */ /* Handled by Bootstrap }*/
+#reviewModal .modal-content {
+    height: 100vh; /* Ensure content fills height */
+    border-radius: 0; /* No radius for fullscreen */
+}
+#reviewModal .modal-header {
+    /* background-color: #0d6efd; /* Primary blue */ /* Use theme purple? */
+    background-color: #692AA9; /* Match theme */
+    color: white;
+    position: sticky; /* Keep header visible */
+    top: 0;
+    z-index: 1051; /* Above modal body content */
+}
+#reviewModal .modal-body {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Allow body to take remaining space */
+    min-height: 0; /* Prevent flexbox overflow issues */
+}
+#reviewModal #pdfContainer {
+    flex: 1; /* Allow PDF container to grow */
+    min-height: 0; /* Prevent flexbox overflow issues */
+    overflow: hidden; /* Contain the iframe */
+    background-color: #f8f9fa; /* Light background for PDF area */
+}
+#reviewModal #pdfViewer {
+    width: 100%;
+    height: 100%;
+    border: none;
+    /* min-height: 500px; /* Remove - let flexbox handle height */
+}
+#reviewModal .modal-footer { /* Custom footer for review actions */
+    background-color: #fff;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem;
+    position: sticky; /* Keep footer visible */
+    bottom: 0;
+    z-index: 1051; /* Above modal body content */
+}
+#reviewModal #rejectionSection {
+    transition: opacity 0.3s ease, max-height 0.3s ease; /* Animate appearance */
+    /* width: 300px; /* Let column handle width */
+    opacity: 0; /* Hidden by default */
+    max-height: 0; /* Collapsed by default */
+    overflow: hidden;
+}
+#reviewModal #rejectionSection.show { /* Add .show class via JS */
+     opacity: 1;
+     max-height: 200px; /* Adjust max-height as needed */
+     margin-bottom: 1rem; /* Add space below when visible */
+}

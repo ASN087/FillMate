@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+psycopg2 = "*"
+django-bootstrap5 = "*"
+djangorestframework-simplejwt = "*"
+docx2pdf = "*"
+pywin32 = "*"
+python-docx = "*"
+reportlab = "*"
+djangorestframework = "*"
+setuptools = "*"
+channels = "*"
+pypdf2 = "==3.0.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
